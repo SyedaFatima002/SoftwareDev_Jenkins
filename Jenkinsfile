@@ -1,26 +1,38 @@
 pipeline {
-
     agent any
     
     stages {
-         stage('build') {
-          steps {
-              bat 'npm install'
-            }
-          }
-        
-        stage('Docker Comopse Up') {
+        stage('Checkout') {
             steps {
-               
-                    bat "docker compose up"
-                
+                git 'https://github.com/your/repository.git'
             }
         }
-         stage('kill') {
+        
+        stage('Dependency Installation') {
             steps {
-               
-                    bat "docker compose down"
-                
+                sh 'npm install' 
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'npm test' 
+            }
+        }
+        
+        stage('Containerized') {
+            steps {
+                //building docker image
+                sh 'docker build -d frontend-image'
+                //deploying application
+                sh 'docker-compose up -d'
+                sh 'docker-compose down'
             }
         }
     }
